@@ -1,47 +1,6 @@
 # The Last Door — Local Living Room
+- this readme will be removed later, it's only for you girlies uwu - 
 
-This is a standalone local version of Chapter 2. It starts in the living room
-and ends when the study door is unlocked. It does not need the team's GitHub
-repository or a hosting account to run.
-
-## Run it on Windows with VS Code
-
-1. Download and extract Living_Room_Local.zip.
-2. Open VS Code. Choose File → Open Folder and select living_room_local.
-   You should see app.py, room_2.py, requirements.txt, and assets in that folder.
-3. Choose Terminal → New Terminal. The terminal must be in this folder.
-4. Install Streamlit and start the app:
-
-```powershell
-python -m pip install -r requirements.txt
-python -m streamlit run app.py
-```
-
-5. Open the Local URL printed in the terminal, usually http://localhost:8501.
-   Keep the terminal running. Press Ctrl+C in that terminal to stop the app.
-
-Use the commands above instead of VS Code's Run Python File button for app.py.
-If Windows does not recognize python but recognizes py, replace python with py.
-Python 3.12 is the version used for testing.
-
-If you want a separate environment, use these commands instead:
-
-```powershell
-python -m venv .venv
-.\.venv\Scripts\python.exe -m pip install -r requirements.txt
-.\.venv\Scripts\python.exe -m streamlit run app.py
-```
-
-These commands do not require activating the environment in PowerShell.
-In VS Code, Python: Select Interpreter lets you select this .venv interpreter.
-
-For the terminal version, run:
-
-```powershell
-python console_room_2.py
-```
-
-It uses input() and print(), and calls the same puzzle functions as the web app.
 
 ## Read the code in this order
 
@@ -137,21 +96,9 @@ locally, as requested; it has not been deployed or pushed to the team repo.
 7. Finish the room without pressing Save photograph. Continue should retain it.
 8. Close/reopen the popup, then restart from the sidebar.
 
-## Answers for development
+## Spoilersss
 
 Spoilers: the bookshelf word is INSIDE. The drawer PIN is 383389.
 Both are calculated from the clues; the logic does not compare against
 an unexplained hardcoded answer.
-
-## Later team integration
-
-Move room_2.py into game/rooms/ and update the imports when integrating.
-Keep the shared player name, inventory, notebook, and room routing consistent
-with the other levels. This local game dictionary is limited to this level;
-it should not overwrite the other rooms' state in the integrated app.
-
-Official Streamlit references:
-- https://docs.streamlit.io/get-started/installation/command-line
-- https://docs.streamlit.io/develop/api-reference/execution-flow/st.dialog
-- https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state
 
