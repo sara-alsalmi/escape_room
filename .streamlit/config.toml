@@ -1,6 +1,6 @@
 [server]
 enableStaticServing = true
-headless = true
+headless = false
 
 [theme]
 base = "dark"
