@@ -44,7 +44,7 @@ enableStaticServing = true
 | Room | What the player does |
 |---|---|
 | Basement | Restores power, solves the storage box puzzle, repairs the mirror, and opens the key cabinet to find the way upstairs. |
-| Majlis | Moves through the house (in development). |
+| Majlis | 	Examines the coffee table and family photograph, solves the bookshelf and programming-book puzzles, unlocks the drawer, and finds the key to the Study. |
 | Study | Solves three linked puzzles that open a wall safe. Each puzzle unlocks only after the previous one. |
 | Courtyard | Makes the final decision at the gate. |
 
