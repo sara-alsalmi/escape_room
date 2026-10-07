@@ -1,6 +1,9 @@
 import streamlit as st
+import navigations 
+
 from pathlib import Path
 import time
+import base64
 
 # Python script for the basement room: all related functions (puzzles) and the page interface 
 
@@ -35,8 +38,9 @@ def reset_generator():
 # 2. Second puzzle 
 # The other puzzle is finding the correct answer to the equations (the player should enter three correct numbers)
 
-# Tuple to store the counts of the shapes
+# Tuple to store the counts of the shapes in the puzzle tha player should counts 
 shapes_counts = (3, 3, 3, 2)
+
 
 shape1_count =  shapes_counts[0] # Hilal icon (outlined)
 shape2_count =  shapes_counts[1] # Hilal icon (filled)
@@ -45,16 +49,19 @@ shape4_count = shapes_counts[3] # Sun icon (outlined)
 
 answers = []
 
+# Here adding the answer of the calculations to the answer list (these calculations from the note)
 answers.append(shape1_count * shape3_count)
 answers.append(shape4_count + shape2_count)
 answers.append(shape3_count - shape4_count)
 
+# Reconvert to tuple 
 answers = tuple(answers)
 
 # Check player answer
 def check_answer(player_answer):
 
     for i in range(3):
+        # IF one of the answer is False return False (not solved)
         if player_answer[i] != answers[i]:
             return False
     return True
@@ -68,7 +75,7 @@ def check_answer(player_answer):
 # revealing a phrase that helps with the final solution.
 
 
-# 
+# This is the current status of the mirror parts that will apears to the player 
 mirror_parts_status = [False, True, False]
 
 def rotate_mirror(mirror_parts_status, mirror_number):
@@ -99,47 +106,50 @@ def check_code(player_code):
 
 # ------------------------------------ Interface Part (Streamlit) ------------------------------------
 
-# Streamlit session stat for retaining values ​​between reruns for the same user
+# Streamlit session stat for retaining values between reruns for the same user
+def setup():
 
-# Store the switches state
-if "switches" not in st.session_state:
-    st.session_state.switches = reset_generator()
+    # Store the switches state
+    if "switches" not in st.session_state:
+        st.session_state.switches = reset_generator()
 
-# Store the player's current order
-if "current_order" not in st.session_state:
-    st.session_state.current_order = []
+    # Store the player's current order
+    if "current_order" not in st.session_state:
+        st.session_state.current_order = []
 
-# Store whether the player selected a wrong switch
-if "wrong_switch" not in st.session_state:
-    st.session_state.wrong_switch = False
+    # Store whether the player selected a wrong switch
+    if "wrong_switch" not in st.session_state:
+        st.session_state.wrong_switch = False
 
-# Store the status of the mirrors 
-if "mirror_parts_status" not in st.session_state: 
-    st.session_state.mirror_parts_status = [False, True, False]
+    # Store the status of the mirrors
+    if "mirror_parts_status" not in st.session_state:
+        if navigations.is_solved("mirror"):
+            st.session_state.mirror_parts_status = [True, True, True]
+        else:
+            st.session_state.mirror_parts_status = [False, True, False]
 
-# Store whether the generator popup is open 
-if "generator_open" not in st.session_state:
-    st.session_state.generator_open = False
+    # Store whether the generator popup is open
+    if "generator_open" not in st.session_state:
+        st.session_state.generator_open = False
 
-# Store whether the boxes popen is open 
-if "boxes_open" not in st.session_state:
-    st.session_state.boxes_open = False
+    # Store whether the boxes popup is open
+    if "boxes_open" not in st.session_state:
+        st.session_state.boxes_open = False
 
-# Store whether the mirror popen is open 
-if "mirror_open" not in st.session_state:
-    st.session_state.mirror_open = False
+    # Store whether the mirror popup is open
+    if "mirror_open" not in st.session_state:
+        st.session_state.mirror_open = False
 
-# Store whether the mirror popen is open 
-if "key_open" not in st.session_state:
-    st.session_state.key_open = False
+    # Store whether the key popup is open
+    if "key_open" not in st.session_state:
+        st.session_state.key_open = False
 
-if "key_cabinet_opened" not in st.session_state:
-    st.session_state.key_cabinet_opened = False
-
+    if "key_cabinet_opened" not in st.session_state:
+        st.session_state.key_cabinet_opened = navigations.is_solved("key")
 
 # Styling the popup 
-
-st.markdown(
+def apply_style():
+    st.markdown(
     """
     <style>
 
@@ -172,6 +182,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 def close_generator_popup():
     st.session_state.generator_open = False
@@ -274,6 +285,13 @@ def generator_popup():
             # Display success message and after 2 seconds close the popup
             st.success("Correct order! The generator is running.")
             time.sleep(2)
+
+            # Connect the solved puzzle to the game navigation
+            navigations.mark_solved("generator")
+
+            # Move from the dark basement to the lit basement
+            st.session_state.page = "basement2"
+
             # Set generator_open = False to close the popup 
             st.session_state.generator_open = False
             st.rerun()
@@ -345,8 +363,13 @@ def boxes_popup():
 
             if check_answer(player_answer):
 
+                # Display success message and after 2 seconds close the popup
                 st.success("Correct answer. You solved the puzzle")
                 time.sleep(2)
+
+                # Connect the solved puzzle to the game navigation
+                navigations.mark_solved("boxes")
+
                 st.session_state.boxes_open = False
                 st.rerun()
             else:
@@ -364,6 +387,9 @@ def mirror_popup():
 
     # Display the solved mirror
     if check_mirror(st.session_state.mirror_parts_status):
+
+        # Connect the solved puzzle to the game navigation
+        navigations.mark_solved("mirror")
 
         # Smooth reveal animation
         st.markdown(
@@ -500,6 +526,10 @@ def key_popup():
         elif code_correct:
             #st.success("The cabinet unlocks.")
             st.session_state.key_cabinet_opened = True
+
+            # Connect the key to app.py so the basement door can open
+            navigations.mark_solved("key")
+
             st.rerun(scope="fragment")
         else:
             st.error("Incorrect code. Try again.")
@@ -510,6 +540,21 @@ def key_popup():
 
     if st.session_state.key_cabinet_opened:
         st.success("The cabinet unlocks. You found the basement key.")
+        
+        if st.button("Continue to the living room",
+                     type="primary",
+                     key="basement_reward_continue",
+                     width="stretch"
+                     
+        ):
+            # Close the Basement popup
+            st.session_state.key_open = False
+
+            # Show the Living Room story message first
+            st.session_state.room = "majlis"
+            st.session_state.page = "message"
+
+            st.rerun()
 
     
 
@@ -540,33 +585,3 @@ def display_mirror_image(image_path, mirror_number):
         """
     )
         
-    
-
-# Basement Page (Just sample for now to test the puzzles)
-st.title("Basement")
-
-
-if st.button("Start generator puzzle"):
-    st.session_state.generator_open = True
-
-# Reopen the popup after each rerun
-if st.session_state.generator_open:
-    generator_popup()
-
-if st.button("Start boxes puzzle"):
-    st.session_state.boxes_open = True
-
-if st.session_state.boxes_open:
-    boxes_popup()
-
-if st.button("Start mirror puzzle"):
-    st.session_state.mirror_open = True
-
-if st.session_state.mirror_open:
-    mirror_popup()
-
-if st.button("Start key cabinet"):
-    st.session_state.key_open = True
-
-if st.session_state.key_open:
-    key_popup()

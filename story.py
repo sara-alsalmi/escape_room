@@ -5,7 +5,7 @@ class Story:
         # one entry per room
         self.rooms = {
             "basement": {
-                "background": "Bassement_dark.jpeg",
+                "background": "Basement_dark.png",
                 "text": f"{player}, you wake in the basement. You remember helping Fahad "
                         "with the boxes. The stairwell door is locked, and the house above "
                         "you is silent. Your phone lights up. Two senders. Two different "
@@ -16,7 +16,7 @@ class Story:
             },
 
             "majlis": {
-                "background": "Majlis_dark.jpeg",
+                "background": "Majlis_dark.png",
                 "text": "The spare key turns, and the stairwell door opens. The house above "
                         "is quiet. Your phone lights up again.",
                 "fahad": f"“Good, {player}. Go through the majlis. The study has the courtyard key.”",
@@ -25,7 +25,7 @@ class Story:
             },
 
             "study": {
-                "background": "Study_dark.jpeg",
+                "background": "study.jpeg",
                 "text": "The drawer slides open, and the study key is inside. Down the hall, "
                         "the study door waits. Your phone lights up again.",
                 "fahad": "“Don't let that other number delay you. Find the key and meet me outside.”",
@@ -34,10 +34,10 @@ class Story:
             },
 
             "courtyard": {
-                "background": "Courtyard_dark.jpeg",
+                "background": "courtyard.jpeg",
                 "text": "The document box is open. You hold the security tablet and the "
                         "courtyard key. The courtyard door is ahead. Your phone lights up again.",
-                "fahad": "“Those images are from earlier. I'm outside now. Bring the key.”",
+                "fahad": "“I know you would come out for me. I’m at the courtyard gate. Open up for me.”",
                 "unknown": "“Keep the gate closed. I'm bringing help.”",
                 "button": "Go to the courtyard",
             },

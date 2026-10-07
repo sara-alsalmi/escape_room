@@ -7,9 +7,19 @@ import streamlit as st
 
 project_folder = os.path.dirname(os.path.abspath(__file__))
 
+# Main escape_room folder
+root_folder = os.path.abspath(
+    os.path.join(project_folder, "..", "..")
+)
+
+# Room 2 pictures folder
+assets_folder = os.path.join(
+    root_folder, "assets", "images", "room_2"
+)
+
 
 def picture_data(file_name):
-    path = os.path.join(project_folder, "assets", file_name)
+    path = os.path.join(assets_folder, file_name)
 
     with open(path, "rb") as file:
         picture = file.read()
@@ -18,17 +28,15 @@ def picture_data(file_name):
 
 
 def add_style():
-    path = os.path.join(project_folder, "style.css")
+    path = os.path.join(project_folder, "room_2_style.css")
 
     with open(path, "r", encoding="utf-8") as file:
         style = file.read()
 
-    background = picture_data("living_room.png")
-    style = style.replace("ROOM_PICTURE", background)
     st.markdown("<style>" + style + "</style>", unsafe_allow_html=True)
 
 
-def show_picture(file_name, x, y, width, height):
+def show_picture(file_name, x, y, width, height, max_width=360):
     # Show just the close-up part of the original screenshot.
     # The original picture file is kept unchanged.
     picture = picture_data(file_name)
@@ -38,7 +46,8 @@ def show_picture(file_name, x, y, width, height):
 
     html = f"""
     <div class="puzzle-picture" role="img" aria-label="Puzzle close-up"
-         style="aspect-ratio:{width}/{height};
+         style="width:min(100%, {max_width}px);
+                aspect-ratio:{width}/{height};
                 background-image:url('data:image/png;base64,{picture}');
                 background-size:{picture_width}% auto;
                 background-position:{picture_left}% {picture_top}%;

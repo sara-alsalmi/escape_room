@@ -1,13 +1,14 @@
+import html
 import streamlit as st
 import navigations
+from game.rooms import room_1, room_3, room_4
 from story import Story
-from game.rooms import room_1 
 
 
-# Settings 
+# Settings
 st.set_page_config(page_title="The Last Door", page_icon="🚪", layout="wide")
 
-# Removes the defualt header since its not used in the project 
+# Removes the default header since it's not used in the project
 st.markdown("""
 <style>
 [data-testid="stHeader"] { display: none; }
@@ -15,38 +16,159 @@ footer { display: none; }
 </style>
 """, unsafe_allow_html=True)
 
-# create the navigations for rooms
+# Prepare the saved values (a refresh restores them from the URL)
 navigations.setup()
+room_1.setup()
+room_3.setup()
+room_1.apply_style()
 
-# remember the screen after a refresh -
-# first run of a session: read the screen from the address (URL)
-if "page" not in st.session_state:
-    st.session_state.page = st.query_params.get("page", "name")
-    st.session_state.room = st.query_params.get("room", "basement")
-    st.session_state.player_name = st.query_params.get("name", "")
+# Save the current values in the address
+navigations.save_to_url()
 
-# no name saved means the player skipped the first screen, so go back to it
-if st.session_state.page != "name" and st.session_state.player_name == "":
-    st.session_state.page = "name"
+# Responsive name-entry page
+st.markdown("""
+<style>
 
-# every run: save the current screen in the address
-st.query_params["page"] = st.session_state.page
-st.query_params["room"] = st.session_state.room
-st.query_params["name"] = st.session_state.player_name
+.title {
+    top: clamp(35px, 7vh, 75px) !important;
+    right: clamp(30px, 7vw, 110px) !important;
+    z-index: 2 !important;
+    text-align: right !important;
+}
 
-#---------------------------------------------------------
+.arabic {
+    font-size: clamp(55px, 5vw, 70px) !important;
+    font-weight: bold !important;
+    font-family: "Times New Roman", Cairo, serif !important;
+    margin: 0 !important;
+}
 
-# Interface 1: introduction 
-if st.session_state.page == "name":
+.english {
+    font-size: clamp(28px, 2.5vw, 35px) !important;
+    font-weight: bold !important;
+    font-family: "Times New Roman", serif !important;
+    letter-spacing: clamp(3px, 0.35vw, 4.5px) !important;
+    margin: 0 !important;
+}
 
-    # Background photo
-    st.markdown("""<style>
-    .stApp {
-        background-image: url("app/static/intro.jpeg");
+/* Name-entry panel */
+.st-key-name_panel {
+    position: fixed !important;
+
+    width: min(460px, calc(100vw - 32px)) !important;
+
+    top: 52% !important;
+    right: clamp(30px, 8vw, 130px) !important;
+    transform: translateY(-50%) !important;
+
+    padding: clamp(24px, 3vw, 36px) !important;
+    box-sizing: border-box !important;
+
+    max-height: 82vh !important;
+    overflow-y: auto !important;
+}
+
+.name_text {
+    font-size: clamp(25px, 2.2vw, 34px) !important;
+}
+
+/* Make the Begin button fill the panel */
+.st-key-name_panel [data-testid="stButton"] {
+    width: 100% !important;
+}
+
+.st-key-name_panel [data-testid="stButton"] button {
+    width: 100% !important;
+}
+
+/* Smaller screens */
+@media (max-width: 900px) {
+
+    .title {
+        top: 15px !important;
+        left: 50% !important;
+        right: auto !important;
+
+        width: calc(100vw - 30px) !important;
+        transform: translateX(-50%) !important;
+        text-align: center !important;
+    }
+
+    .arabic {
+        font-size: 40px !important;
+    }
+
+    .english {
+        font-size: 19px !important;
+    }
+
+    .st-key-name_panel {
+        width: calc(100vw - 32px) !important;
+        max-width: 460px !important;
+
+        top: 58% !important;
+        left: 50% !important;
+        right: auto !important;
+        transform: translate(-50%, -50%) !important;
+
+        padding: 22px !important;
+    }
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+# Used by every room page
+def set_background(file_name):
+    st.markdown(f"""
+    <style>
+    .stApp {{
+        background-image: url("app/static/{file_name}");
         background-size: cover;
         background-position: center;
-    }
-    </style>""", unsafe_allow_html=True)
+        background-attachment: fixed;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+
+
+def room_header(name, progress):
+    st.markdown(f"""
+    <style>
+    .room_title {{
+        position: fixed;
+        top: 40px;
+        left: 64px;
+        color: #e9e5dc;
+    }}
+    .room_name {{
+        font-size: 42px;
+        font-family: Times New Roman, serif;
+        letter-spacing: 6px;
+        text-transform: uppercase;
+        margin: 0;
+    }}
+    .room_progress {{
+        font-size: 14px;
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #c9b8a8;
+        margin-top: 8px;
+    }}
+    </style>
+
+    <div class="room_title">
+        <div class="room_name">{name}</div>
+        <div class="room_progress">{progress}</div>
+    </div>
+    """, unsafe_allow_html=True)
+
+
+
+# Interface 1: introduction
+if st.session_state.page == "name":
+
+    set_background("intro.jpeg")
 
     # Title format and style
     st.markdown("""<style>
@@ -112,7 +234,7 @@ if st.session_state.page == "name":
                     unsafe_allow_html=True)
         name = st.text_input("Enter Your First Name")
 
-        if st.button("Begin"):
+        if st.button("Begin", width="stretch"):
             try:
                 name = name.strip()
                 if name == "":
@@ -126,29 +248,19 @@ if st.session_state.page == "name":
                 st.error(str(e))
     st.stop()
 
-# Interface 2: messages
+
+# Interface 2: messages (one screen before each room)
 if st.session_state.page == "message":
 
-    #  read this room's text
-    player = st.session_state.player_name
+    # read this room's text (html.escape keeps a strange name from breaking the page)
+    player = html.escape(st.session_state.player_name)
     room = st.session_state.room
     story = Story(player).get(room)
 
-    # background changes per room
-    st.markdown(f"""
-    <style>
-    .stApp {{
-        background-image: url("app/static/{story["background"]}");
-        background-size: cover;
-        background-position: center;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
+    set_background(story["background"])
 
-    # style of the panel 
     st.markdown("""
     <style>
-
     .st-key-message_panel {
         position: fixed;
         top: 50%;
@@ -161,7 +273,6 @@ if st.session_state.page == "message":
         border-radius: 12px;
         box-shadow: 0 0 40px #000000CC;
     }
-
     .message_text {
         font-size: 22px;
         font-family: Times New Roman, serif;
@@ -169,7 +280,6 @@ if st.session_state.page == "message":
         line-height: 1.5;
         margin-bottom: 30px;
     }
-
     .msg_panel {
         background-color: #2a211c;
         border: 1px solid #FFFFFF26;
@@ -178,7 +288,6 @@ if st.session_state.page == "message":
         color: #e9e5dc;
         min-height: 140px;
     }
-
     .msg_sender {
         font-size: 12px;
         letter-spacing: 3px;
@@ -186,12 +295,10 @@ if st.session_state.page == "message":
         color: #c9b8a8;
         margin-bottom: 10px;
     }
-
     .msg_text {
         font-size: 18px;
         line-height: 1.4;
     }
-
     .st-key-message_panel .stButton button {
         background-color: #8a9a86;
         color: white;
@@ -203,25 +310,21 @@ if st.session_state.page == "message":
         text-transform: uppercase;
         margin-top: 20px;
     }
-
     .st-key-message_panel .stButton button:hover {
         background-color: #9fb09b;
         box-shadow: 0 0 18px #8A9A8699;
     }
-
     </style>
     """, unsafe_allow_html=True)
 
     with st.container(key="message_panel"):
 
-        # story paragraph
         st.markdown(f"""
         <div class="message_text">{story["text"]}</div>
         """, unsafe_allow_html=True)
 
         col1, col2 = st.columns(2)
 
-        # Fahad's message
         with col1:
             st.markdown(f"""
             <div class="msg_panel">
@@ -230,7 +333,6 @@ if st.session_state.page == "message":
             </div>
             """, unsafe_allow_html=True)
 
-        # unknown number's message
         with col2:
             st.markdown(f"""
             <div class="msg_panel">
@@ -239,241 +341,185 @@ if st.session_state.page == "message":
             </div>
             """, unsafe_allow_html=True)
 
-        # start button 
-        if st.button(story["button"], use_container_width=True):
+        # start button, goes to the room 
+        if st.button(story["button"], width="stretch"):
             st.session_state.page = room
             st.rerun()
-       
 
-    # save the two messages so the Phone can show them
-    navigations.add_message("Fahad — Brother", story["fahad"])
-    navigations.add_message("Unknown number", story["unknown"])
+    # the Phone reads the messages from story.py by itself
     navigations.show_navigations()
     st.stop()
-    
- #  Basement 
-if st.session_state.page == "basement":
-    navigations.show_navigations()
-#if "solved" not in st.session_state:
-#st.session_state.solved = []
-    st.markdown(f"""
-    <style>
-    .stApp {{
-        background-image: url("app/static/Basement_dark.jpeg");
-        background-size: cover;
-    }}
-    </style>
-    """, unsafe_allow_html=True)
 
+
+# interface Basement (dark): the only thing to click is the electrical box
+if st.session_state.page == "basement":
+
+    set_background("Basement_dark.png")
+    room_header("Basement", navigations.progress_text("basement"))
+    navigations.show_navigations()
 
     st.markdown("""
     <style>
-    .room_title {
-        position: fixed;
-        top: 40px;
-        left: 64px;
-        color: #e9e5dc;
-    }
-
-    .room_name {
-        font-size: 42px;
-        font-family: Times New Roman, serif;
-        letter-spacing: 6px;
-        text-transform: uppercase;
-        margin: 0;
-    }
-
-    .room_progress {
-        font-size: 14px;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        color: #c9b8a8;
-        margin-top: 8px;
-    }
-
     /* where the button sits on the room */
     .st-key-hotspot_kit {
         position: fixed;
-        top: 330px;
-        right: 500px;
+        top: 61vh;
+        left: 38.5vw;
     }
     </style>
-
-    <div class="room_title">
-        <div class="room_name">Basement</div>
-        <div class="room_progress">0 / 4 puzzles</div>
-    </div>
     """, unsafe_allow_html=True)
 
-    # the button
-    if st.button("Electrical box", key="hotspot_kit"):
+    if st.button("Electricity", key="hotspot_kit"):
         room_1.generator_popup()
 
     st.stop()
 
-if "key_obtained" not in st.session_state:
-    st.session_state.key_obtained = False
+
+# interface Basement lit: boxes, mirror, key cabinet, then the door
 if st.session_state.page == "basement2":
 
+    set_background("Basement.png")
+    room_header("Basement", navigations.progress_text("basement"))
     navigations.show_navigations()
 
-    # Background
     st.markdown("""
     <style>
-    .stApp {
-        background-image: url("app/static/Basement.jpeg");
-        background-size: cover;
-        background-position: center;
-        background-attachment: fixed;
-    }
-
-    .room_title {
-        position: fixed;
-        top: 40px;
-        left: 64px;
-        color: #e9e5dc;
-    }
-
-    .room_name {
-        font-size: 42px;
-        font-family: Times New Roman, serif;
-        letter-spacing: 6px;
-        text-transform: uppercase;
-        margin: 0;
-    }
-
-    .room_progress {
-        font-size: 14px;
-        letter-spacing: 4px;
-        text-transform: uppercase;
-        color: #c9b8a8;
-        margin-top: 8px;
-    }
-
-    /* Boxes hotspot */
     .st-key-hotspot_boxes {
         position: fixed;
-        top: 600px;
-        left: 300px;
+        top: 43vh;
+        left: 8vw;
     }
-
-    /* Mirror hotspot */
     .st-key-hotspot_mirror {
         position: fixed;
-        top: 350px;
-        left: 900px;
+        top: 22vh;
+        left: 45vw;
     }
-
-    /* Key cabinet hotspot */
     .st-key-hotspot_key {
         position: fixed;
-        top: 400px;
-        right: 500px;
+        top: 24vh;
+        left: 66.5vw;
     }
     .st-key-hotspot_door {
-    position: fixed;
-    top: 300px;
-    right: 150px
+        position: fixed;
+        top: 11vh;
+        left: 80.5vw;
     }
-    
     .st-key-hotspot_door button {
-    opacity: 0;
-    width: 150px;
-    height: 250px;
-    cursor: pointer;
+        opacity: 0;
+        width: 150px;
+        height: 250px;
+        cursor: pointer;
     }
-
-
     </style>
-
-    <div class="room_title">
-        <div class="room_name">Basement</div>
-        <div class="room_progress">1 / 4 puzzles</div>
-    </div>
     """, unsafe_allow_html=True)
 
-
-    # BOXES HOTSPOT
-    if st.button("Storage boxes",key="hotspot_boxes"):
-        st.session_state.boxes_open = True
-
-    if st.session_state.boxes_open:
+    # Each hotspot opens its popup, the popup code lives in room_1.py
+    if st.button("Storage boxes", key="hotspot_boxes"):
         room_1.boxes_popup()
 
-
-    # MIRROR HOTSPOT
-    if st.button("Mirror",key="hotspot_mirror"):
-        st.session_state.mirror_open = True
-
-    if st.session_state.mirror_open:
+    if st.button("Mirror", key="hotspot_mirror"):
         room_1.mirror_popup()
 
-
-    # KEY CABINET HOTSPOT
-
     if st.button("Key cabinet", key="hotspot_key"):
-        st.session_state.key_open = True
-
-    if st.session_state.key_open:
         room_1.key_popup()
 
-
-    if st.session_state.key_obtained:
+    # the door only appears after the key is found
+    if navigations.is_solved("key"):
         if st.button("Open door", key="hotspot_door"):
             st.session_state.room = "majlis"
             st.session_state.page = "message"
             st.rerun()
 
+    st.stop()
+
+
+# Living Room / Majlis
+if st.session_state.page == "majlis":
+
+    from game.rooms import room_2_ui
+
+    set_background("Majlis.png")
+
+    # Same header used by the Basement
+    room_header(
+        "Living Room",
+        navigations.progress_text("majlis")
+    )
+
+    # Same Map, Notebook, and Phone navigation
+    navigations.show_navigations()
+
+    # Living Room scene and puzzles
+    room_2_ui.show_room()
 
     st.stop()
 
 
-# Study
+
+# Study: three puzzles; the safe leads to the courtyard message.
 if st.session_state.page == "study":
+    set_background("study.jpeg")
+    room_header("Study", navigations.progress_text("study"))
+    navigations.show_navigations()
 
     st.markdown("""
     <style>
-    .stApp {
-        background-image: url("app/static/Study_dark.jpeg");
-        background-size: cover;
-        background-position: center;
+    .st-key-hotspot_najdi {
+        position: fixed;
+        top: 22%;
+        left: 57%;
+    }
+    .st-key-hotspot_flag {
+        position: fixed;
+        top: 57%;
+        left: 24%;
+    }
+    .st-key-hotspot_safe {
+        position: fixed;
+        top: 12%;
+        left: 44%;
     }
     </style>
-
-    <div class="room_title">
-        <div class="room_name">Study</div>
-        <div class="room_progress">0 / 4 puzzles</div>
-    </div>
     """, unsafe_allow_html=True)
 
-    # temporary: go to the next room
-    if st.button("Next (temporary)", key="next_btn"):
-        st.session_state.room = "courtyard"
-        st.session_state.page = "message"
-        st.rerun()
+    if st.button("Najdi pattern", key="hotspot_najdi"):
+        room_3.najdi_popup()
 
+    if st.button("Founding flag", key="hotspot_flag"):
+        room_3.founding_popup()
 
-    navigations.show_navigations()
+    if st.button("Saudi picture", key="hotspot_safe"):
+        room_3.safe_popup()
+
     st.stop()
 
 
-# Courtyard (placeholder so the last Start button has somewhere to go)
+# Courtyard: final decision at the gate.
 if st.session_state.page == "courtyard":
+    set_background("courtyard.jpeg")
+    room_header("Courtyard", "Final decision")
+    navigations.show_navigations()
 
     st.markdown("""
     <style>
-    .stApp {
-        background-image: url("app/static/Courtyard_dark.jpeg");
-        background-size: cover;
-        background-position: center;
+    .st-key-hotspot_gate {
+        position: fixed;
+        top: 40%;
+        left: 50%;
     }
     </style>
-
-    <div class="room_title">
-        <div class="room_name">Courtyard</div>
-        <div class="room_progress">Final decision coming soon</div>
-    </div>
     """, unsafe_allow_html=True)
 
-    navigations.show_navigations()
+    if st.button("The gate", key="hotspot_gate"):
+        room_4.decision_popup()
+
+    st.stop()
+
+
+# Final outcomes from Room 4.
+if st.session_state.page in ("win", "lose"):
+    if st.session_state.page == "win":
+        set_background("courtyard.jpeg")
+
+    room_4.show_ending(st.session_state.page)
     st.stop()

@@ -1,0 +1,72 @@
+/* Presentation only: keep game decisions in room_2.py. */
+
+.st-key-hotspot_coffee,
+.st-key-hotspot_bookshelf,
+.st-key-hotspot_book,
+.st-key-hotspot_drawer {
+    position: fixed !important;
+    width: auto !important;
+    z-index: 5;
+}
+
+.st-key-hotspot_coffee {
+    left: 53vw;
+    top: 59vh;
+}
+
+.st-key-hotspot_bookshelf {
+    left: 25vw;
+    top: 22vh;
+}
+
+.st-key-hotspot_book {
+    left: 18vw;
+    top: 37vh;
+}
+
+.st-key-hotspot_drawer {
+    left: 76vw;
+    top: 44vh;
+}
+
+/* Match the Basement popup surface. */
+div[data-testid="stDialog"] div[role="dialog"] {
+    background-color: #252826;
+    border: 1px solid rgba(255, 255, 255, .15);
+    border-radius: 12px;
+}
+
+.puzzle-picture {
+    position: relative;
+    overflow: hidden;
+    width: min(100%, 360px);
+    border-radius: 9px;
+    border: 1px solid #68665f;
+    margin: .4rem auto 1rem;
+}
+
+@media (max-width: 700px) {
+    .st-key-hotspot_bookshelf {
+        left: 5vw;
+        top: 18vh;
+    }
+
+    .st-key-hotspot_book {
+        left: 5vw;
+        top: 38vh;
+    }
+
+    .st-key-hotspot_coffee {
+        left: 45vw;
+        top: 65vh;
+    }
+
+    .st-key-hotspot_drawer {
+        left: 62vw;
+        top: 44vh;
+    }
+
+    .puzzle-picture {
+        width: min(100%, 320px);
+    }
+}
