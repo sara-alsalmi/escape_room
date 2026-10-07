@@ -1,0 +1,64 @@
+/* Presentation only: keep game decisions in room_2.py. */
+.stApp { background: #171918; }
+.block-container { max-width: 1500px; padding: 1.5rem 2rem 1rem; }
+header[data-testid="stHeader"] { background: transparent; }
+.game-title { margin: 0; font-size: 2.1rem; line-height: 1.2; }
+.english-title { letter-spacing: .22em; font-size: .72rem; color: #d1cec5; }
+.chapter { margin: .25rem 0; color: #d1cec5; }
+.stButton button { border-radius: 8px; min-height: 44px; }
+.stFormSubmitButton button { min-height: 46px; }
+.st-key-room_scene {
+    position: relative;
+    aspect-ratio: 1672 / 941;
+    min-height: 350px;
+    background-image: url("data:image/png;base64,ROOM_PICTURE");
+    background-size: cover;
+    background-position: center;
+    border-radius: 12px;
+    overflow: hidden;
+}
+.st-key-room_scene [data-testid="stVerticalBlock"] { position: static; }
+.st-key-hotspot_coffee, .st-key-hotspot_bookshelf,
+.st-key-hotspot_book, .st-key-hotspot_drawer {
+    position: absolute !important;
+    width: auto !important;
+    z-index: 2;
+}
+.st-key-hotspot_coffee { left: 53%; top: 59%; }
+.st-key-hotspot_bookshelf { left: 25%; top: 22%; }
+.st-key-hotspot_book { left: 18%; top: 37%; }
+.st-key-hotspot_drawer { left: 76%; top: 44%; }
+.st-key-room_scene button {
+    background: rgba(25, 28, 27, .9);
+    border: 1px solid rgba(233, 230, 221, .3);
+    color: #f0ede6;
+    padding: .25rem .75rem;
+    min-height: 34px;
+}
+.st-key-room_scene button:hover { background: #4a5245; border-color: #9da88f; }
+[data-testid="stDialog"] [role="dialog"] {
+    background: #202321;
+    border: 1px solid rgba(233, 230, 221, .5);
+    border-radius: 14px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+[data-testid="stDialog"] [data-baseweb="modal-backdrop"] {
+    background: rgba(0, 0, 0, .35);
+}
+.puzzle-picture {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    border-radius: 9px;
+    border: 1px solid #68665f;
+    margin: .4rem 0 1rem;
+}
+@media (max-width: 700px) {
+    .block-container { padding: 1rem .7rem; }
+    .st-key-room_scene { aspect-ratio: auto; min-height: 440px; }
+    .st-key-hotspot_bookshelf { left: 5%; top: 18%; }
+    .st-key-hotspot_book { left: 5%; top: 38%; }
+    .st-key-hotspot_coffee { left: 45%; top: 65%; }
+    .st-key-hotspot_drawer { left: 62%; top: 44%; }
+}
