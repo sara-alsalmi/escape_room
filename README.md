@@ -1,6 +1,13 @@
 # Escape Room Project (Python Project)
 
-A Python escape room game with multiple levels, puzzles, and a Streamlit interface.
+An interactive escape room game built with Python and Streamlit. Players start in the basement and progress through multiple rooms by finding clues, solving puzzles, and entering the correct answers to unlock the next level and ultimately escape.
+
+## Technologies Used
+
+- **Python** — Game logic and backend functionality
+- **Streamlit** — Interactive web interface
+- **Git & GitHub** — Version control and project collaboration
+
 
 ## How to Run 
 
@@ -17,3 +24,15 @@ streamlit run app.py
 - `assets/` — Stores game images and other assets.
 - `requirements.txt` — Lists the Python packages needed to run the project.
 - `.gitignore` — Lists files Git should ignore.
+
+
+## How to Play
+
+1. Launch the game using Streamlit.
+2. Start from the basement and read the clues carefully.
+3. Solve the puzzle in each room.
+4. Enter your answer in the provided input field.
+5. A correct answer allows you to move to the next level.
+6. Complete all rooms and puzzles to escape!
+
+
