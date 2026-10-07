@@ -349,8 +349,6 @@ def boxes_popup():
                 time.sleep(2)
                 st.session_state.boxes_open = False
                 st.rerun()
-            elif not not (answer_1.isdigit() and answer_2.isdigit() and answer_3.isdigit()):
-                st.error("Enter the full three answers.")
             else:
                 st.error("Incorrect. Check the labels and try again.")
 
@@ -359,15 +357,64 @@ def boxes_popup():
 @st.dialog("Mirror", width="small", on_dismiss=close_mirror_popup)
 def mirror_popup(): 
     # Friendly caption to the player
-    st.caption(
-        "The reflection looks wrong. Rotate the mirror pieces until the word becomes readable."
-    )
-
-    # Set three columns for each part of the mirror 
-    col1, col2, col3 = st.columns(3, gap="small")
+    st.caption("The reflection doesn't look right.")
 
     # Root path 
     ROOT = Path(__file__).resolve().parents[2]
+
+    # Display the solved mirror
+    if check_mirror(st.session_state.mirror_parts_status):
+
+        # Smooth reveal animation
+        st.markdown(
+            """
+            <style>
+            @keyframes mirror_reveal {
+                from {
+                    opacity: 0;
+                    transform: scale(0.97);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+            }
+
+            div[data-testid="stDialog"] [data-testid="stImage"] img {
+                animation: mirror_reveal 0.5s ease-out;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.image(str(ROOT / "assets" / "images" / "room_1" / "mirror_wholePart.png"),use_container_width=True)
+
+        st.html(
+            """
+            <div style="
+                width: 100%;
+                box-sizing: border-box;
+                margin-top: 16px;
+                padding: 14px 18px;
+                text-align: center;
+                background: #5f6959;
+                color: #f1eee6;
+                border: 1px solid #747f6d;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                letter-spacing: 0.08em;
+            ">
+                REVERSE WHAT YOU FOUND TO OPEN THE KEY CABINET
+            </div>
+            """
+        )
+
+        return
+
+    # Set three columns for each part of the mirror 
+    col1, col2, col3 = st.columns(3, gap="small")
 
     with col1: 
         display_mirror_image(ROOT / "assets" / "images" / "room_1" / "mirror_part_1.png",1)
@@ -388,28 +435,6 @@ def mirror_popup():
             rotate_mirror(st.session_state.mirror_parts_status, 3)
             st.rerun(scope="fragment")
 
-
-    if check_mirror(st.session_state.mirror_parts_status):
-        st.html(
-    """
-    <div style="
-        width: 100%;
-        box-sizing: border-box;
-        margin-top: 16px;
-        padding: 14px 18px;
-        text-align: center;
-        background: #5f6959;
-        color: #f1eee6;
-        border: 1px solid #747f6d;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 600;
-        letter-spacing: 0.08em;
-    ">
-        REVERSE WHAT YOU FOUND TO OPEN THE KEY CABINET
-    </div>
-    """
-)
 
 # Key Cabinet Popup Interface  
 @st.dialog("Key Cabinet", width="small", on_dismiss=close_key_popup)
